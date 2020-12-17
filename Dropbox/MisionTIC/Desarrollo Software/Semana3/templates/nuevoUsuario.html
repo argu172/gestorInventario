@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/EstiloCSS.css">
+    <link rel="stylesheet" href="../static/newPassword.css">
+    <link rel="stylesheet" href="../static/barra.css">
+    <title>Nuevo Usuario</title>
+</head>
+<body>
+    <ul>
+        <li><a href="/inicioUsuario">Inicio</a></li>
+        <li><a href="/">Cerrar Sesion</a></li>
+    </ul>
+
+    <h2>Crear Usuario</h2>
+    <p>Ingrese todos los datos solicitados para crear un nuevo ususario</p>
+    <form method="POST" action="/usuario/crear">
+        <label for="usuario">Nombre de Usuario</label><br>
+        <input type="text" name="usuario" id="usuario" required><br><br>
+        <label for="password">Contraseña</label><br>
+        <input type="password" name="password" id="password" required><br><br>  
+        <label for="email">Email</label><br>
+        <input type="email" name="email" id="email" required>
+        <br><br>
+        <input class="boton1" type="submit" value="Crear"> 
+        <input class="boton1" type="reset" value="Cancelar"> 
+    </form>
+
+</body>
+</html>

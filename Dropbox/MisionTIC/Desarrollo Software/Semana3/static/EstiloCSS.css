@@ -1,0 +1,61 @@
+body{
+    font-family : 'Arial';
+    background-image: url("img/fondo2.jpg");
+}
+
+.button{
+    background-color: rgb(27, 27, 133);
+    color: white;
+    height: 30px;
+    width: 100px
+}
+
+div{
+    background-image: url("../static/img/cafeteria_login.jpg");
+    background-size: 700px;
+    background-repeat: no-repeat;
+    margin: 100px;
+    height: 700px;
+}
+
+.eye{
+    background-image: url("../static/img/ojo.png");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-x: right;
+    width: 34px;
+    height: 34px;
+}
+
+.sizePassword{
+    width: 222px;
+}
+
+form{
+    text-align: right;
+}
+
+h1{
+    text-align: center;
+    color: white;
+    background-color: rgb(37, 10, 10);
+}
+
+h2{
+    margin-right: 5%;
+    padding-top: 5%;
+    text-align: right;
+    color: white;
+}
+
+input{
+    height: 30px;
+    width: 260px;
+    border-radius: 5px;
+}
+
+a{
+    font-size: 80%px;
+    color: rgb(219, 41, 41);
+    background-color: rgb(37, 10, 10);
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/forgot.css">
+    <title>RecuperarContraseña</title>
+</head>
+<body>
+    <ul>
+        <li><a href="/">Regresar</a></li>
+    </ul>
+    <h2>¿Olvidó su Contraseña?</h2>
+    <p>Ingrese los datos solicitados y le enviaremos un email.
+        Ante cualquier duda, comuníquese con el administrador de tu cuenta.</p>
+    <form method="POST" action="/enviarCorreo">
+        <label for="email">Ingrese su correo electrónico</label><br>
+        <input type="email" name="email" id="email" required><br><br>
+        <label for="email2">Ingrese de nuevo su correo electrónico</label><br>
+        <input type="email" name="email2" id="email2" required><br><br>
+        <br>
+        <input class="boton" type="submit" value="Enviar email" onclick="iguales()">
+    </form>
+    <script src="../static/validacion.js"></script>
+</body>
+</html>

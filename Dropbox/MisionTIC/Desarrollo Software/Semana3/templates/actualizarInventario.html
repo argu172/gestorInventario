@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/background.css">
+    <link rel="stylesheet" href="../static/newPassword.css">
+    <link rel="stylesheet" href="../static/barra.css">
+    <style>
+        label{
+            font-size: 20px;
+        }
+        div{
+            margin: 0;
+        }
+    </style>
+    <title>Actualizar Inventario</title>
+</head>
+<body>
+    <ul>
+        <li><a href="/inicioUsuario">Inicio</a></li>
+        <li><a href="/">Cerrar Sesion</a></li>
+    </ul>
+    <div>
+        <h2>Actualizar Inventario </h2>
+        <form action="">
+            <label for="ingresa">Cantidad que ingresó</label>
+            <br>
+            <input type="number" id="ingresa" required>
+            <br>
+            <br>
+            <input class="button" type="button" value="Adicionar Productos">
+            <br>
+            <br>
+            <label for="sale">Cantidad que salió</label>
+            <br>
+            <input type="number" id="sale" required>
+            <br>
+            <br>
+            <input class="button" type="button" value="Descontar Productos">
+            <br>
+            <br>
+            <br>
+            <input class="button" type="button" value="Actualizar Datos del Producto" onclick="location.href='/actualizarProducto'">
+            <input class="button" type="button" value="Eliminar Producto">
+        </form>
+    </div>
+</body>
+</html>

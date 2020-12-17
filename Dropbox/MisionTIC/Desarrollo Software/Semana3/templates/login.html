@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es-co">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/EstiloCSS.css">
+    <title>Iniciar Sesión</title>
+</head>
+<body>
+    <script src="../static/validacion.js"></script>
+    <h1>Sistema de Gestión de Inventarios</h1>
+    <div>
+        <h2>¡Bienvenido!</h2>
+        <form action="/inicioUsuario" method="POST" name="formulario" id="formulario">
+            <input type="text" name="usuario" id="usuario" placeholder="Usuario" required>
+            <br>
+            <br>
+            <input class="sizePassword" type="password" name="password" id="password" placeholder="Contraseña" required>
+            <input class="eye" type="button" value="" onmouseover="mostrar()" onmouseout="mostrar()">
+            <br>
+            <br>
+            <input class="button" type="submit" value="Iniciar Sesión">
+            <a href="/forgot">Recuperar contraseña</a>
+        </form>
+    </div>
+</body>
+</html>
