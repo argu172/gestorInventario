@@ -22,25 +22,22 @@
         <li><a href="/">Cerrar Sesion</a></li>
     </ul>
     <div>
-        <h2>Actualizar Producto</h2>
-        <form action="">
-            <label for="referencia">Referencia</label>
-            <br>
-            <input type="text" id="referencia" required>
-            <br>
-            <br>
-            <label for="nombre">Nombre</label>
-            <br>
-            <input type="text" id="nombre" required>
-            <br>
-            <br>
-            <label for="imagen">Imagen</label>
-            <br>
-            <input class="color" type="file" id="imagen" accept=".jpg, .jpeg, .png, .gif, .bmp" onchange="validarExtension()" required>
-            <br>
-            <br>
-            <input class="button" type="submit" value="Actualizar Producto">
-        </form>
+        {% if row %}
+            <h2>Actualizar Producto: {{row['nombre']}}</h2>
+            <form action="/guardarCambio/{{row[0]}}" method="POST" enctype="multipart/form-data">
+                <label for="nombre">Nombre</label>
+                <br>
+                <input type="text" id="nombre" name="nombre" required>
+                <br>
+                <br>
+                <label for="imagen">Imagen</label>
+                <br>
+                <input class="color" type="file" id="imagen" name="imagen" accept=".jpg, .jpeg, .png, .gif, .bmp" onchange="validarExtension()" required>
+                <br>
+                <br>
+                <input class="button" type="submit" value="Actualizar Producto">
+            </form>
+        {% endif %}
     </div>
     <script src="../static/validacion.js"></script>
 </body>

@@ -22,28 +22,22 @@
         <li><a href="/">Cerrar Sesion</a></li>
     </ul>
     <div>
-        <h2>Actualizar Inventario </h2>
-        <form action="">
-            <label for="ingresa">Cantidad que ingresó</label>
-            <br>
-            <input type="number" id="ingresa" required>
-            <br>
-            <br>
-            <input class="button" type="button" value="Adicionar Productos">
-            <br>
-            <br>
-            <label for="sale">Cantidad que salió</label>
-            <br>
-            <input type="number" id="sale" required>
-            <br>
-            <br>
-            <input class="button" type="button" value="Descontar Productos">
-            <br>
-            <br>
-            <br>
-            <input class="button" type="button" value="Actualizar Datos del Producto" onclick="location.href='/actualizarProducto'">
-            <input class="button" type="button" value="Eliminar Producto">
-        </form>
+        {% if row %}
+            <h2>Actualizar Inventario de {{row['nombre']}}</h2>
+            <form action="/actualizarCantidad/{{row[0]}}" method="POST">
+                <label for="cantidad">Ingrese la nueva cantidad de {{row['nombre']}} en inventario</label>
+                <br>
+                <input type="number" id="cantidad" name="cantidad" required>
+                <br>
+                <br>
+                <input class="button" type="submit" value="Actualizar">
+                <br>
+                <br>
+                <br>
+                <input class="button" type="button" value="Actualizar Datos del Producto" onclick="location.href='/actualizarProducto/{{row[0]}}'">
+                <input class="button" type="button" value="Eliminar Producto" onclick="location.href='/eliminarProducto/{{row[0]}}'">
+            </form>
+        {% endif %}
     </div>
 </body>
 </html>

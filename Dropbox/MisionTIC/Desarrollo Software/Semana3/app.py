@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session
+from werkzeug.utils import secure_filename
 from flask_mail import Mail,  Message
-from formularios import formUsuario
+from formularios import formUsuario, formProducto, formCantidad
 import os
 import sqlite3
 from markupsafe import escape
@@ -26,9 +27,15 @@ app.secret_key = os.urandom(24)
 
 mail = Mail(app)
 
+FOLDER_IMAGENES = "static/img/"
+EXT_VALIDAS = ["jpeg", "jpg", "png"]
+
 @app.route("/", methods=["POST", "GET"])
 def login():
-    return render_template("login.html")
+    session.pop("usuario", None)
+    session.pop("administrador", None)
+    form = formUsuario()
+    return render_template("login.html", form=form)
 
 @app.route("/forgot", methods=["POST", "GET"])
 def forgot():
@@ -47,22 +54,89 @@ def inicioUsuario():
             cur.execute(
                 "SELECT * FROM usuarios WHERE nombre = ? AND clave = ?", [username, pwd])
             if cur.fetchone():
-                session["usuario"] = username
-                return render_template("inicioUsuario.html", form=form)
+                if username == "admin":
+                    session["administrador"] = username
+                else:
+                    session["usuario"] = username
+                with sqlite3.connect("proyectoDB.db") as con:
+                    con.row_factory = sqlite3.Row
+                    cur = con.cursor()
+                    cur.execute("SELECT * FROM productos")
+                    row = cur.fetchall()
+                    return render_template("inicioUsuario.html", form=form, row=row)
         eg.msgbox(msg='Usuario o contraseña inválidos!',
                 title='Error!!', 
                 ok_button='Aceptar')
         return render_template("login.html")
     else:
-        return render_template("inicioUsuario.html")
+        if "administrador" in session:
+            with sqlite3.connect("proyectoDB.db") as con:
+                    con.row_factory = sqlite3.Row
+                    cur = con.cursor()
+                    cur.execute("SELECT * FROM productos")
+                    row = cur.fetchall()
+            return render_template("inicioUsuario.html", row=row)
+        elif "usuario" in session:
+            with sqlite3.connect("proyectoDB.db") as con:
+                    con.row_factory = sqlite3.Row
+                    cur = con.cursor()
+                    cur.execute("SELECT * FROM productos")
+                    row = cur.fetchall()
+            return render_template("inicioUsuario.html", row=row)
+        else:
+            eg.msgbox(msg='Debe iniciar sesión para ingresar',
+            title='Error', 
+            ok_button='Aceptar')
+            return render_template("login.html")
 
 @app.route("/crearProducto")
 def crearProducto():
-    return render_template("crearProducto.html")
+    if "administrador" in session:
+        return render_template("crearProducto.html")
+    else:
+        eg.msgbox(msg='Solo el administrador puede crear nuevos productos',
+        title='Error', 
+        ok_button='Aceptar')
+    return render_template("inicioUsuario.html")
+
+@app.route("/producto/crear", methods=["POST"])
+def producto_crear():
+    ref = request.form["referencia"]
+    nombre = request.form["nombre"]
+    cantidad = request.form["cantidad"]
+    imagen = request.files["imagen"]
+    ext = imagen.filename.rsplit(".", 1)[1]
+    if ext in EXT_VALIDAS:
+        with sqlite3.connect("proyectoDB.db") as con:
+            ruta = secure_filename(imagen.filename)
+            imagen.save(FOLDER_IMAGENES+ruta)
+            cur = con.cursor()
+            cur.execute("INSERT INTO productos (referencia, nombre, cantidad, imagen) VALUES (?,?,?,?)",
+                        (ref, nombre, cantidad, ruta))
+            con.commit()
+            eg.msgbox(msg='Producto creado satisfactoriamente',
+                title='Atención', 
+                ok_button='Aceptar')
+            return render_template("crearProducto.html")
+        eg.msgbox(msg='Producto NO pudo ser creado',
+            title='Error', 
+            ok_button='Aceptar')
+        return render_template("crearProducto.html")
+    else:
+        eg.msgbox(msg='Extensión de la imagen no es válida',
+            title='Error', 
+            ok_button='Aceptar')
+        return render_template("crearProducto.html")
 
 @app.route("/nuevoUsuario")
 def nuevoUsuario():
-    return render_template("nuevoUsuario.html")
+    if "administrador" in session:
+        return render_template("nuevoUsuario.html")
+    else:
+        eg.msgbox(msg='Solo el administrador puede crear nuevos usuarios',
+        title='Error', 
+        ok_button='Aceptar')
+    return render_template("inicioUsuario.html")
 
 @app.route("/usuario/crear", methods=["POST"])
 def usuario_crear():
@@ -80,19 +154,89 @@ def usuario_crear():
             title='Atención', 
             ok_button='Aceptar')
         return render_template("nuevoUsuario.html")
-    eg.msgbox(msg='Usuario NO creado',
+    eg.msgbox(msg='Usuario NO pudo ser creado',
         title='Error', 
         ok_button='Aceptar')
     return render_template("nuevoUsuario.html")
 
-@app.route("/actualizarInventario")
-def actualizarInventario():
-    return render_template("actualizarInventario.html")
+@app.route("/actualizarInventario/<referencia>")
+def actualizarInventario(referencia):
+    with sqlite3.connect("proyectoDB.db") as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("SELECT * FROM productos WHERE referencia = ?", [referencia])
+        row = cur.fetchone() 
+    return render_template("actualizarInventario.html", row=row)
 
-@app.route("/actualizarProducto")
-def actualizarProducto():
-    return render_template("actualizarProducto.html")
+@app.route("/actualizarCantidad/<referencia>", methods=["POST"])
+def actualizarCantidad(referencia):
+    cant = request.form["cantidad"]
+    with sqlite3.connect("proyectoDB.db") as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("UPDATE productos SET cantidad = ? WHERE referencia = ?", [cant, referencia])
+        eg.msgbox(msg='Inventario actualizado satisfactoriamente',
+            title='Atención', 
+            ok_button='Aceptar')
+        return render_template("inicioUsuario.html")
 
+@app.route("/eliminarProducto/<referencia>")
+def eliminarProducto(referencia):
+    if "administrador" in session:
+        with sqlite3.connect("proyectoDB.db") as con:
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute("DELETE FROM productos WHERE referencia = ?", [referencia])
+            eg.msgbox(msg='Producto elimando',
+                title='Atención', 
+                ok_button='Aceptar')
+            return render_template("inicioUsuario.html")
+    else:
+        eg.msgbox(msg='Solo el administrador puede eliminar productos',
+        title='Error', 
+        ok_button='Aceptar')
+        return render_template("actualizarInventario.html")
+
+@app.route("/actualizarProducto/<referencia>")
+def actualizarProducto(referencia):
+    if "administrador" in session:
+        with sqlite3.connect("proyectoDB.db") as con:
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM productos WHERE referencia = ?", [referencia])
+            row = cur.fetchone() 
+        return render_template("actualizarProducto.html", row=row)
+    else:
+        eg.msgbox(msg='Solo el administrador puede actualizar los datos del producto',
+            title='Error', 
+            ok_button='Aceptar')
+        return render_template("actualizarProducto.html")
+
+@app.route("/guardarCambio/<referencia>", methods=["POST","GET"])
+def guardarCambio(referencia):
+    if (request.method == "POST"):
+        nombre = request.form["nombre"]
+        imagen = request.files["imagen"]
+        ext = imagen.filename.rsplit(".", 1)[1]
+        if ext in EXT_VALIDAS:
+            with sqlite3.connect("proyectoDB.db") as con:
+                ruta = secure_filename(imagen.filename)
+                imagen.save(FOLDER_IMAGENES+ruta)
+                con.row_factory = sqlite3.Row
+                cur = con.cursor()
+                cur.execute("UPDATE productos SET nombre = ?, imagen = ? WHERE referencia = ?", [nombre, ruta, referencia])
+                eg.msgbox(msg='Producto Actualizado',
+                    title='Atención', 
+                    ok_button='Aceptar')
+                return render_template("actualizarProducto.html")
+        else:
+            eg.msgbox(msg='Extensión de la imagen no es válida',
+                title='Error', 
+                ok_button='Aceptar')
+            return render_template("actualizarProducto.html")
+    else:
+        return render_template("actualizarProducto.html")
+    
 @app.route("/enviarCorreo", methods=["POST", "GET"])
 def enviarCorreo():
     if(request.method=="POST"):

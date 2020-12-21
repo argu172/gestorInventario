@@ -12,6 +12,7 @@
 <body>
     <header>
         <ul>
+            <li><a href="/inicioUsuario">Recargar Tabla</a></li>
             <li><a href="/crearProducto">Crear Producto</a></li>
             <li><a href="/nuevoUsuario">Crear Usuario</a></li>
             <li><a href="/">Cerrar Sesion</a></li>
@@ -31,24 +32,14 @@
                     <th>Cantidad</th>
                     <th>Imagen</th>
                 </tr>
-                <tr onclick="location.href='/actualizarInventario'">
-                    <td>1</td>
-                    <td>Almohabana</td>
-                    <td>50</td>
-                    <td><img src="../static/img/almohabana.jpg" alt=""></td>
-                </tr>
-                <tr onclick="location.href='/actualizarInventario'">
-                    <td>2</td>
-                    <td>Cafe</td>
-                    <td>94</td>
-                    <td><img src="../static/img/cafe.jpg" alt=""></td>
-                </tr>
-                <tr onclick="location.href='/actualizarInventario'">
-                    <td>3</td>
-                    <td>croissant</td>
-                    <td>94</td>
-                    <td><img src="../static/img/crissant.jpg" alt=""></td>
-                </tr>
+                {% for i in row %}
+                    <tr onclick="location.href='/actualizarInventario/{{i[0]}}'">
+                        <td>{{i['referencia']}}</td>
+                        <td>{{i['nombre']}}</td>
+                        <td>{{i['cantidad']}}</td>
+                        <td><img src="../static/img/{{i['imagen']}}" alt=""></td>
+                    </tr>
+                {% endfor %}
             </table>
         </div> 
        <!--barra de busqueda-->
